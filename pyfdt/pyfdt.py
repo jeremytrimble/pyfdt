@@ -24,6 +24,7 @@ import os
 import json
 from copy import deepcopy, copy
 from struct import Struct, unpack, pack
+from functools import cmp_to_key
 
 FDT_MAGIC = 0xd00dfeed
 FDT_BEGIN_NODE = 0x1
@@ -417,6 +418,32 @@ class FdtNop(object):  # pylint: disable-msg=R0903
         pos += 4
         return (pack('>I', FDT_NOP), string_store, pos)
 
+def sort_lexical(a, b):
+    """
+    Comparison function that sorts FdtNode and FdtProperty objects based only
+    on their names.
+    """
+    if a.name == b.name:
+        return 0
+    elif a.name < b.name:
+        return -1
+    else:
+        return 1
+
+def sort_props_first(a, b):
+    """
+    Comparison function that sorts FdtNode and FdtProperty objects, always
+    putting FdtNode objects at the end.
+    """
+    a_is_node = isinstance(a, FdtNode)
+    b_is_node = isinstance(b, FdtNode)
+    if a_is_node != b_is_node:
+        if a_is_node:
+            return 1
+        else:
+            return -1
+    else:
+        return sort_lexical(a, b)
 
 class FdtNode(object):
     """Node representation"""
@@ -662,6 +689,29 @@ class FdtNode(object):
                 else:
                     break
 
+    def sort(self, recursive=True, key=cmp_to_key(sort_props_first)):
+        """
+        Sort the properties and subnnodes of this node, and (optionally) do the
+        same recursively for subnodes. (Useful for textual comparison of dts.)
+        """
+        self.subdata.sort( key=key )
+        if recursive:
+            for item in self.subdata:
+                if isinstance(item, FdtNode):
+                    item.sort( recursive, key )
+
+def cmp_reserve_entries(a,b):
+    # Follow the scheme used by dtc.
+    if a["address"] < b["address"]:
+        return -1
+    elif a["address"] > b["address"]:
+        return 1
+    elif a["size"] < b["size"]:
+        return -1
+    elif a["size"] > b["size"]:
+        return 1
+    else:
+        return 0
 
 class Fdt(object):
     """Flattened Device Tree representation"""
@@ -816,6 +866,20 @@ class Fdt(object):
                 return None
             curnode = found
         return curnode
+    
+    def sort_reserve_entries(self):
+        """
+        Sort the reserve_entries, first by address, then by size.
+        """
+        self.reserve_entries.sort( key=cmp_to_key(cmp_reserve_entries) )
+
+    def sort(self, key=cmp_to_key(sort_props_first)):
+        """
+        Sort the reserve_entries and (recursively) all properties and nodes of
+        the Fdt.
+        """
+        self.sort_reserve_entries()
+        self.get_rootnode().sort( key=key )
 
 def _add_json_to_fdtnode(node, subjson):
     """Populate FdtNode with JSON dict items"""
