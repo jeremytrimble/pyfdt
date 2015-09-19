@@ -120,10 +120,10 @@ v17.tsm.test_tree1.dtb
 moved.sw_tree1.test.dtb
 "
 
-echo "Building DTC..."
-make -C dtc all tests
-echo "Running DTC Tests..."
-(cd dtc/tests/ && ./run_tests.sh)
+#echo "Building DTC..."
+#make -C dtc all tests
+#echo "Running DTC Tests..."
+#(cd dtc/tests/ && ./run_tests.sh)
 
 TESTS=0
 PASS=0
@@ -131,83 +131,83 @@ FAIL=0
 
 FAILED=""
 
-echo "Running pyfdt DTB Parser Tests..."
-for dtb in $DTB_TESTS; do
-    TESTS=`expr $TESTS + 1`
-    echo "TEST $dtb..."
-    SKIP=0
-    if ! ../dtbdump.py --format dtb dtc/tests/$dtb $dtb ; then
-        if echo $MUST_FAIL_PARSE  | grep -q $dtb; then
-            echo "PASS $dtb failure expected"
-            SKIP=1
-        else
-            echo "FAIL parsing $dtb"
-            FAIL=`expr $FAIL + 1`
-            FAILED="$FAILED $dtb"
-            continue
-        fi
-    fi
-    if [ $SKIP -lt 1 ] ; then
-        if ! dtc/fdtdump $dtb > $dtb.dts ; then
-            echo "FAIL dump : $dtb see $dtb.hex"
-            hd < $dtb > $dtb.hex
-            hd < dtc/tests/$dtb > $dtb.orig.hex
-            FAIL=`expr $FAIL + 1`
-            FAILED="$FAILED $dtb"
-            continue
-        fi
-        dtc/fdtdump dtc/tests/$dtb > $dtb.orig.dts
-        ../dtbdump.py --format dts dtc/tests/$dtb $dtb.pydts
-        grep -v "// " $dtb.orig.dts > $dtb.orig.dts_
-        grep -v "// " $dtb.dts > $dtb.dts_
-        grep -v "// " $dtb.pydts > $dtb.pydts_
-        if ! diff -u $dtb.dts $dtb.orig.dts > $dtb.result ; then
-            if echo $CAN_FAIL_HEAD_DTS_DIFF  | grep -q $dtb; then
-                echo "PASS $dtb header diff failure expected"
-            else
-                echo "FAIL diff : $dtb see $dtb.result"
-                hd < $dtb > $dtb.hex
-                hd < dtc/tests/$dtb > $dtb.orig.hex
-                FAIL=`expr $FAIL + 1`
-                FAILED="$FAILED $dtb"
-                continue
-            fi
-        fi
-        if ! diff -u $dtb.dts_ $dtb.orig.dts_ > $dtb.result ; then
-            echo "FAIL diff : $dtb see $dtb.result"
-            hd < $dtb > $dtb.hex
-            hd < dtc/tests/$dtb > $dtb.orig.hex
-            FAIL=`expr $FAIL + 1`
-            FAILED="$FAILED $dtb"
-            continue
-        fi
-        if ! diff -u $dtb.pydts_ $dtb.orig.dts_ > $dtb.result_ ; then
-            echo "FAIL pydump diff : $dtb see $dtb.result_"
-            hd < $dtb > $dtb.hex
-            hd < dtc/tests/$dtb > $dtb.orig.hex
-            FAIL=`expr $FAIL + 1`
-            FAILED="$FAILED $dtb"
-            continue
-        fi
-        ../dtbdump.py --format json $dtb $dtb.json
-        if ! PYTHONPATH=$PWD/../ ./dtbcheckequal.py --format1 dtb --format2 json $dtb $dtb.json ; then
-            echo "FAIL json diff : $dtb see $dtb.result_"
-            hd < $dtb > $dtb.hex
-            hd < dtc/tests/$dtb > $dtb.orig.hex
-            FAIL=`expr $FAIL + 1`
-            FAILED="$FAILED $dtb"
-            continue
-        fi
-        if echo $MUST_FAIL  | grep -q $dtb; then
-            echo "ERROR $dtb should have failed"
-            FAIL=`expr $FAIL + 1`
-            FAILED="$FAILED $dtb"
-            continue
-        fi
-        rm $dtb*
-    fi
-    PASS=`expr $PASS + 1`
-done
+#echo "Running pyfdt DTB Parser Tests..."
+#for dtb in $DTB_TESTS; do
+#    TESTS=`expr $TESTS + 1`
+#    echo "TEST $dtb..."
+#    SKIP=0
+#    if ! ../dtbdump.py --format dtb dtc/tests/$dtb $dtb ; then
+#        if echo $MUST_FAIL_PARSE  | grep -q $dtb; then
+#            echo "PASS $dtb failure expected"
+#            SKIP=1
+#        else
+#            echo "FAIL parsing $dtb"
+#            FAIL=`expr $FAIL + 1`
+#            FAILED="$FAILED $dtb"
+#            continue
+#        fi
+#    fi
+#    if [ $SKIP -lt 1 ] ; then
+#        if ! dtc/fdtdump $dtb > $dtb.dts ; then
+#            echo "FAIL dump : $dtb see $dtb.hex"
+#            hd < $dtb > $dtb.hex
+#            hd < dtc/tests/$dtb > $dtb.orig.hex
+#            FAIL=`expr $FAIL + 1`
+#            FAILED="$FAILED $dtb"
+#            continue
+#        fi
+#        dtc/fdtdump dtc/tests/$dtb > $dtb.orig.dts
+#        ../dtbdump.py --format dts dtc/tests/$dtb $dtb.pydts
+#        grep -v "// " $dtb.orig.dts > $dtb.orig.dts_
+#        grep -v "// " $dtb.dts > $dtb.dts_
+#        grep -v "// " $dtb.pydts > $dtb.pydts_
+#        if ! diff -u $dtb.dts $dtb.orig.dts > $dtb.result ; then
+#            if echo $CAN_FAIL_HEAD_DTS_DIFF  | grep -q $dtb; then
+#                echo "PASS $dtb header diff failure expected"
+#            else
+#                echo "FAIL diff : $dtb see $dtb.result"
+#                hd < $dtb > $dtb.hex
+#                hd < dtc/tests/$dtb > $dtb.orig.hex
+#                FAIL=`expr $FAIL + 1`
+#                FAILED="$FAILED $dtb"
+#                continue
+#            fi
+#        fi
+#        if ! diff -u $dtb.dts_ $dtb.orig.dts_ > $dtb.result ; then
+#            echo "FAIL diff : $dtb see $dtb.result"
+#            hd < $dtb > $dtb.hex
+#            hd < dtc/tests/$dtb > $dtb.orig.hex
+#            FAIL=`expr $FAIL + 1`
+#            FAILED="$FAILED $dtb"
+#            continue
+#        fi
+#        if ! diff -u $dtb.pydts_ $dtb.orig.dts_ > $dtb.result_ ; then
+#            echo "FAIL pydump diff : $dtb see $dtb.result_"
+#            hd < $dtb > $dtb.hex
+#            hd < dtc/tests/$dtb > $dtb.orig.hex
+#            FAIL=`expr $FAIL + 1`
+#            FAILED="$FAILED $dtb"
+#            continue
+#        fi
+#        ../dtbdump.py --format json $dtb $dtb.json
+#        if ! PYTHONPATH=$PWD/../ ./dtbcheckequal.py --format1 dtb --format2 json $dtb $dtb.json ; then
+#            echo "FAIL json diff : $dtb see $dtb.result_"
+#            hd < $dtb > $dtb.hex
+#            hd < dtc/tests/$dtb > $dtb.orig.hex
+#            FAIL=`expr $FAIL + 1`
+#            FAILED="$FAILED $dtb"
+#            continue
+#        fi
+#        if echo $MUST_FAIL  | grep -q $dtb; then
+#            echo "ERROR $dtb should have failed"
+#            FAIL=`expr $FAIL + 1`
+#            FAILED="$FAILED $dtb"
+#            continue
+#        fi
+#        rm $dtb*
+#    fi
+#    PASS=`expr $PASS + 1`
+#done
 
 PYFDT_TESTS="
 bad_testname_test
@@ -268,58 +268,104 @@ manip_noexist_index
 manip_badobj_merge
 "
 
-echo "Running pyfdt generation Tests..."
-for dtb in $PYFDT_TESTS; do
+#echo "Running pyfdt generation Tests..."
+#for dtb in $PYFDT_TESTS; do
+#    TESTS=`expr $TESTS + 1`
+#    echo "TEST $dtb..."
+#    SKIP=0
+#    if ! PYTHONPATH=$PWD/../ ./genfdt.py $dtb ; then
+#        if echo $PYFDT_TESTS_FAILS  | grep -q $dtb; then
+#            echo "PASS $dtb failure expected"
+#            SKIP=1
+#        else
+#            echo "FAIL generating $dtb"
+#            FAIL=`expr $FAIL + 1`
+#            FAILED="$FAILED $dtb"
+#            continue
+#        fi
+#    fi
+#    if [ $SKIP -lt 1 ] ; then
+#        if ! dtc/fdtdump out.dtb > $dtb.dts ; then
+#            echo "FAIL dump : $dtb see $dtb.hex"
+#            hd < out.dtb > $dtb.hex
+#            FAIL=`expr $FAIL + 1`
+#            FAILED="$FAILED $dtb"
+#            continue
+#        fi
+#        ../dtbdump.py --format dts out.dtb $dtb.pydts
+#        if ! diff -u out.dts $dtb.pydts > $dtb.pyresult ; then
+#            echo "FAIL diff : $dtb see $dtb.pyresult"
+#            hd < out.dtb > $dtb.hex
+#            cp out.dts $dtb.orig.pydts
+#            FAIL=`expr $FAIL + 1`
+#            FAILED="$FAILED $dtb"
+#            continue
+#        fi
+#        grep -v "// " $dtb.dts > $dtb.dts_
+#        grep -v "// " $dtb.pydts > $dtb.pydts_
+#        if ! diff -u $dtb.dts_ $dtb.pydts_ > $dtb.result ; then
+#            echo "FAIL diff : $dtb see $dtb.result"
+#            hd < out.dtb > $dtb.hex
+#            FAIL=`expr $FAIL + 1`
+#            FAILED="$FAILED $dtb"
+#            continue
+#        fi
+#        rm out.dts out.dtb $dtb*
+#        if echo $PYFDT_TESTS_FAILS  | grep -q $dtb; then
+#            echo "FAIL $dtb failure was expected"
+#            FAIL=`expr $FAIL + 1`
+#            FAILED="$FAILED $dtb"
+#            continue
+#        fi
+#    fi
+#    PASS=`expr $PASS + 1`
+#done
+
+echo "Running pyfdt sorting Tests..."
+for dtb in $DTB_TESTS; do
+    echo "TEST sorting $dtb..."
+    if ! ../dtbdump.py -s --format dtb dtc/tests/$dtb ${dtb}.sorted_pyfdt ; then
+        echo "SKIP dtbdump parsing $dtb"
+        continue
+    fi
+
+    if ! dtc/dtc -s -I dtb -O dtb -o ${dtb}.sorted_dtc dtc/tests/$dtb ; then
+        echo "SKIP dtc parsing $dtb"
+        #echo "FAIL dump : $dtb see $dtb.hex"
+        #FAIL=`expr $FAIL + 1`
+        #FAILED="$FAILED ${dtb}(sorting_failed_dtc_parse)"
+        continue
+    fi
+
     TESTS=`expr $TESTS + 1`
-    echo "TEST $dtb..."
-    SKIP=0
-    if ! PYTHONPATH=$PWD/../ ./genfdt.py $dtb ; then
-        if echo $PYFDT_TESTS_FAILS  | grep -q $dtb; then
-            echo "PASS $dtb failure expected"
-            SKIP=1
+
+    if ! cmp ${dtb}.sorted_dtc ${dtb}.sorted_pyfdt; then
+
+        dtc/dtc -I dtb -O dts -o ${dtb}.sorted_dtc.dts   ${dtb}.sorted_dtc
+        dtc/dtc -I dtb -O dts -o ${dtb}.sorted_pyfdt.dts ${dtb}.sorted_pyfdt
+#
+        grep -v "// " ${dtb}.sorted_dtc.dts   > ${dtb}.sorted_dtc.dts_
+        grep -v "// " ${dtb}.sorted_pyfdt.dts > ${dtb}.sorted_pyfdt.dts_
+
+        if ! diff -u ${dtb}.sorted_dtc.dts_ ${dtb}.sorted_pyfdt.dts_ > ${dtb}.diff_result ; then
+            if echo $CAN_FAIL_HEAD_DTS_DIFF  | grep -q $dtb; then
+                echo "PASS $dtb header diff failure expected"
+                PASS=`expr $PASS + 1`
+            else
+                echo "FAIL ${dtb}.sorted_dtc ${dtb}.sorted_pyfdt do not match"
+                FAIL=`expr $FAIL + 1`
+                FAILED="$FAILED ${dtb}(sorting_did_not_match)"
+            fi
         else
-            echo "FAIL generating $dtb"
-            FAIL=`expr $FAIL + 1`
-            FAILED="$FAILED $dtb"
-            continue
+            PASS=`expr $PASS + 1`
         fi
+
+    else
+        PASS=`expr $PASS + 1`
     fi
-    if [ $SKIP -lt 1 ] ; then
-        if ! dtc/fdtdump out.dtb > $dtb.dts ; then
-            echo "FAIL dump : $dtb see $dtb.hex"
-            hd < out.dtb > $dtb.hex
-            FAIL=`expr $FAIL + 1`
-            FAILED="$FAILED $dtb"
-            continue
-        fi
-        ../dtbdump.py --format dts out.dtb $dtb.pydts
-        if ! diff -u out.dts $dtb.pydts > $dtb.pyresult ; then
-            echo "FAIL diff : $dtb see $dtb.pyresult"
-            hd < out.dtb > $dtb.hex
-            cp out.dts $dtb.orig.pydts
-            FAIL=`expr $FAIL + 1`
-            FAILED="$FAILED $dtb"
-            continue
-        fi
-        grep -v "// " $dtb.dts > $dtb.dts_
-        grep -v "// " $dtb.pydts > $dtb.pydts_
-        if ! diff -u $dtb.dts_ $dtb.pydts_ > $dtb.result ; then
-            echo "FAIL diff : $dtb see $dtb.result"
-            hd < out.dtb > $dtb.hex
-            FAIL=`expr $FAIL + 1`
-            FAILED="$FAILED $dtb"
-            continue
-        fi
-        rm out.dts out.dtb $dtb*
-        if echo $PYFDT_TESTS_FAILS  | grep -q $dtb; then
-            echo "FAIL $dtb failure was expected"
-            FAIL=`expr $FAIL + 1`
-            FAILED="$FAILED $dtb"
-            continue
-        fi
-    fi
-    PASS=`expr $PASS + 1`
+
 done
+rm -f -- *.sorted_dtc* *.sorted_pyfdt* *.diff_result
 
 echo "Passed : $PASS/$TESTS"
 echo "Failed : $FAIL/$TESTS"
