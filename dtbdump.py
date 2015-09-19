@@ -12,6 +12,7 @@ from pyfdt.pyfdt import FdtBlobParse
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Device Tree Blob dump')
     parser.add_argument('--format', dest = 'format' ,help="output format (dts, json or dtb), default to dts", default = "dts")
+    parser.add_argument('-s', '--sort', dest = 'sort' ,help="sort the properties and subnodes by name", default = False, action='store_true')
     parser.add_argument('in_filename', help="input filename")
     parser.add_argument('out_filename', help="output filename")
     args = parser.parse_args()
@@ -23,6 +24,9 @@ if __name__ == '__main__':
         dtb = FdtBlobParse(infile)
     
     fdt = dtb.to_fdt()
+
+    if args.sort:
+        fdt.sort()
     
     if args.format == "dts":
         with open(args.out_filename, 'wb') as outfile:
