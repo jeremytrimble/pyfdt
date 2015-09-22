@@ -52,4 +52,5 @@ The samples directory shows how to :
 [Device Tree Wiki](http://www.devicetree.org)
 [Device Tree Compiler](http://www.devicetree.org/Device_Tree_Compiler)
 
-[![Build Status](https://travis-ci.org/superna9999/pyfdt.svg?branch=master)](https://travis-ci.org/superna9999/pyfdt)
+[![Build Status](https://travis-ci.org/jeremytrimble/pyfdt.svg?branch=master)](https://travis-ci.org/jeremytrimble/pyfdt)
+
